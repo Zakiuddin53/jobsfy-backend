@@ -6,6 +6,7 @@ import { apiReference } from '@scalar/nestjs-api-reference';
 import { LogLevel, ValidationPipe } from '@nestjs/common';
 import { BadRequestErrorFilter } from './exceptions-filters/bad-request-error.filter';
 import { ConfigService } from '@nestjs/config';
+import { AllExceptionsFilter } from './exceptions-filters/all-exceptions.filter';
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ async function bootstrap() {
   }
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useGlobalFilters(new BadRequestErrorFilter());
+  app.useGlobalFilters(new AllExceptionsFilter());
 
   app.enableCors({
     origin: '*',
@@ -59,7 +61,7 @@ async function bootstrap() {
   await app.init();
   console.log('Database connection has been established successfully.');
 
-  await app.listen(process.env.PORT || 3000);
+  await app.listen(process.env.PORT || 9000);
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
 

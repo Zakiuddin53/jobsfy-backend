@@ -22,8 +22,10 @@ export class AuthController {
 
   @UseGuards(AuthGuard('local'))
   @Post('login')
-  @ApiOperation({ summary: 'login' })
-  async login(@Request() req): Promise<LoginResponseDTO | BadRequestException> {
+  async login(@Request() req) {
+    console.log('Login route hit');
+    console.log('Request body:', req.body);
+    console.log('User:', req.user);
     return this.authService.login(req.user);
   }
 
