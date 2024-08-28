@@ -11,7 +11,6 @@ import { AllExceptionsFilter } from './exceptions-filters/all-exceptions.filter'
 dotenv.config();
 
 async function bootstrap() {
-  console.log('JWT Secret in main:', process.env.JWT_SECRET); // Add this log
   const logLevels: LogLevel[] = ['log', 'error', 'warn', 'fatal'];
 
   if (process.env.NODE_ENV === 'DEBUG') {
@@ -59,10 +58,8 @@ async function bootstrap() {
   // Log successful database connection
   app.enableShutdownHooks();
   await app.init();
-  console.log('Database connection has been established successfully.');
 
   await app.listen(process.env.PORT || 9000);
-  console.log(`Application is running on: ${await app.getUrl()}`);
 }
 
 bootstrap().catch((error) => {
