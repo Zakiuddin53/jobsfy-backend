@@ -1,4 +1,6 @@
-import { Profile } from 'src/modules/profiles/entites/profile.entity';
+// src/modules/users/entities/user.entity.ts
+
+import { Profile } from '../../profiles/entites/profile.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from 'typeorm';
 
 @Entity()
@@ -14,6 +16,12 @@ export class User {
 
   @Column()
   password: string;
+
+  @Column({ default: 'user' })
+  role: string;
+
+  @Column({ nullable: true })
+  refreshToken: string;
 
   @OneToOne(() => Profile, (e) => e.user)
   profile: Profile;

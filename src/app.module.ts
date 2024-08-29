@@ -8,6 +8,7 @@ import { ProfileModule } from './modules/profiles/profiles.module';
 import { UsersModule } from './modules/users/users.module';
 import { JwtGuard } from './modules/auth/guards/jwt.guard';
 import { PassportModule } from '@nestjs/passport';
+import { SeedModule } from './modules/seed/seed.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { PassportModule } from '@nestjs/passport';
     UsersModule,
     AuthModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
+    SeedModule,
   ],
   controllers: [AppController],
   providers: [

@@ -8,6 +8,8 @@ import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module'; // Import UsersModule
 import { LocalStrategy } from './strategy/local.strategy';
 import { ProfileModule } from '../profiles/profiles.module';
+import { RefreshTokenGuard } from './guards/refresh-token.guard';
+import { RefreshTokenStrategy } from './strategy/refresh-token.strategy';
 
 @Module({
   imports: [
@@ -19,15 +21,19 @@ import { ProfileModule } from '../profiles/profiles.module';
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
         signOptions: {
-          expiresIn:
-            configService.get<string>('ACCESS_TOKEN_VALIDITY_DURATION_IN_SEC') +
-            's',
+          expiresIn: configService.get<string>('JWT_ACCESS_EXPIRATION'),
         },
       }),
       inject: [ConfigService],
     }),
   ],
-  providers: [AuthService, JwtStrategy, LocalStrategy],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    LocalStrategy,
+    RefreshTokenStrategy,
+    RefreshTokenGuard,
+  ],
   exports: [JwtStrategy, PassportModule],
   controllers: [AuthController],
 })
