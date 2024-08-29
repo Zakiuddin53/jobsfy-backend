@@ -3,9 +3,13 @@ import {
   Controller,
   Get,
   Post,
-  Put,
+  Patch,
   Req,
   UseGuards,
+  NotFoundException,
+  Param,
+  ForbiddenException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ProfileService } from './profiles.service';
@@ -23,24 +27,47 @@ export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get All' })
+  @ApiOperation({ summary: 'Get All Profiles' })
   @PaginatedSwaggerDocs(Profile, PROFILE_PAGINATION_CONFIG)
   async paginate(@Paginate() query: PaginateQuery) {
     return this.profileService.paginate(query);
   }
 
+  @Get('me')
+  @ApiOperation({ summary: 'Get Current User' })
+  async getCurrentUserProfile(@Req() req) {
+    const userId = req.user.id;
+    const profile = await this.profileService.getProfileByUserId(userId);
+    if (!profile) {
+      throw new NotFoundException('Profile not found');
+    }
+    return profile;
+  }
+
   @Post()
-  async createOrUpdateProfile(
-    @Req() req,
-    @Body() profileDto: CreateProfileDto,
-  ) {
+  @ApiOperation({ summary: 'Create Profile' })
+  async createProfile(@Req() req, @Body() profileDto: CreateProfileDto) {
     const userId = req.user.id;
     return this.profileService.createOrUpdateProfile(userId, profileDto);
   }
 
-  @Put()
-  async updateProfile(@Req() req, @Body() updateProfileDto: UpdateProfileDto) {
-    const userId = req.user.id;
+  @Patch(':id')
+  @ApiOperation({ summary: 'Update User Profile' })
+  async updateProfile(
+    @Param('id') id: string,
+    @Req() req,
+    @Body() updateProfileDto: UpdateProfileDto,
+  ) {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      throw new UnauthorizedException('User not authenticated');
+    }
+
+    if (userId !== parseInt(id)) {
+      throw new ForbiddenException('You can only update your own profile');
+    }
+
     return this.profileService.createOrUpdateProfile(userId, updateProfileDto);
   }
 }

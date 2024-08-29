@@ -22,24 +22,57 @@ export class ProfileService {
     );
   }
 
+  async getProfileByUserId(userId: number): Promise<Profile | undefined> {
+    return this.profileRepository.findOne({
+      where: { user: { id: userId } },
+    });
+  }
+
+  async createEmptyProfile(userId: number): Promise<Profile> {
+    const emptyProfile = this.profileRepository.create({
+      user: { id: userId },
+    });
+    return this.profileRepository.save(emptyProfile);
+  }
+
   async createOrUpdateProfile(
     userId: number,
     profileDto: CreateProfileDto | UpdateProfileDto,
   ): Promise<Profile> {
-    let profile = await this.profileRepository.findOne({
-      where: { user: { id: userId } },
-    });
+    let profile = await this.getProfileByUserId(userId);
 
     if (profile) {
-      // Profile exists, update it
+      // Update existing profile
       Object.assign(profile, profileDto);
     } else {
-      // Profile doesn't exist, create a new one
+      // Create new profile
       profile = this.profileRepository.create({
         ...profileDto,
         user: { id: userId },
       });
     }
+
+    return this.profileRepository.save(profile);
+  }
+
+  async updateProfile(
+    userId: number,
+    profileDto: UpdateProfileDto,
+  ): Promise<Profile> {
+    const profile = await this.profileRepository.findOne({
+      where: { user: { id: userId } },
+    });
+
+    if (!profile) {
+      throw new NotFoundException('Profile not found');
+    }
+
+    // Only update fields that are provided in the DTO
+    Object.keys(profileDto).forEach((key) => {
+      if (profileDto[key] !== undefined) {
+        profile[key] = profileDto[key];
+      }
+    });
 
     return this.profileRepository.save(profile);
   }
