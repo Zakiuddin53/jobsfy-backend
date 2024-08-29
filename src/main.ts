@@ -59,7 +59,7 @@ async function bootstrap() {
   app.enableShutdownHooks();
   await app.init();
 
-  await app.listen(process.env.PORT || 9000);
+  await app.listen(process.env.PORT || 3000);
 }
 
 bootstrap().catch((error) => {

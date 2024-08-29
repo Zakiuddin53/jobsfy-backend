@@ -22,7 +22,7 @@ export class Profile {
   @Column({ nullable: true })
   job: string;
 
-  @Column()
+  @Column({ nullable: true })
   salary: number;
 
   @Column({ nullable: true })
@@ -52,10 +52,10 @@ export class Profile {
   @Column({ nullable: true })
   country: string;
 
-  @Column()
+  @Column({ nullable: true })
   yearsOfExperience: number;
 
-  @Column()
+  @Column({ nullable: true })
   yearsAtCurrentCompany: number;
 
   @Column({ nullable: true })

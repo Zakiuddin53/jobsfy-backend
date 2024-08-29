@@ -7,10 +7,12 @@ import { JwtStrategy } from './strategy/jwt.strategy';
 import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module'; // Import UsersModule
 import { LocalStrategy } from './strategy/local.strategy';
+import { ProfileModule } from '../profiles/profiles.module';
 
 @Module({
   imports: [
-    UsersModule, // Add this line to import UsersModule
+    UsersModule,
+    ProfileModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -18,9 +20,8 @@ import { LocalStrategy } from './strategy/local.strategy';
         secret: configService.get<string>('JWT_SECRET'),
         signOptions: {
           expiresIn:
-            configService.get<string>(
-              'ACCESS_TOKEN_VALIDITY_DURATION_IN_SEC',
-            ) || '1d',
+            configService.get<string>('ACCESS_TOKEN_VALIDITY_DURATION_IN_SEC') +
+            's',
         },
       }),
       inject: [ConfigService],

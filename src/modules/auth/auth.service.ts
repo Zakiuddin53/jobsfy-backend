@@ -9,12 +9,14 @@ import { AccessToken } from './types/AccessToken';
 import { RegisterRequestDto } from './dtos/register-request.dto';
 import { UserService } from '../users/users.service';
 import { User } from '../users/entites/user.entity';
+import { ProfileService } from '../profiles/profiles.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UserService,
     private jwtService: JwtService,
+    private profileService: ProfileService, // Add this
   ) {}
 
   async validateUser(email: string, password: string): Promise<User> {
@@ -55,6 +57,10 @@ export class AuthService {
     };
 
     const createdUser = await this.usersService.create(newUser);
+
+    // Remove or comment out this line:
+    // await this.profileService.createProfile(createdUser.id, {});
+
     return this.login(createdUser);
   }
 }
