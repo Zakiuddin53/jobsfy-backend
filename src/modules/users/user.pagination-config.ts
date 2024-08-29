@@ -9,4 +9,7 @@ export const USER_PAGINATION_CONFIG: PaginateConfig<User> = {
   filterableColumns: {
     name: [FilterOperator.EQ, FilterOperator.IN],
   },
+  relations: {
+    profile: true,
+  },
 };
