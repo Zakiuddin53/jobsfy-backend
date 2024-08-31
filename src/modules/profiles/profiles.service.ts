@@ -28,6 +28,15 @@ export class ProfileService {
     });
   }
 
+  async findOneOrThrow(id: number) {
+    return this.profileRepository.findOneOrFail({
+      where: { id },
+      relations: {
+        user: true,
+      },
+    });
+  }
+
   async createEmptyProfile(userId: number): Promise<Profile> {
     const emptyProfile = this.profileRepository.create({
       user: { id: userId },

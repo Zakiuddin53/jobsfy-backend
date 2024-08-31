@@ -33,22 +33,19 @@ export class ProfileController {
     return this.profileService.paginate(query);
   }
 
-  @Get('me')
-  @ApiOperation({ summary: 'Get Current User' })
-  async getCurrentUserProfile(@Req() req) {
-    const userId = req.user.id;
-    const profile = await this.profileService.getProfileByUserId(userId);
-    if (!profile) {
-      throw new NotFoundException('Profile not found');
-    }
-    return profile;
+  @ApiOperation({ summary: 'Get Single' })
+  @Get(':id')
+  getSingle(@Param('id') id: string) {
+    return this.profileService.findOneOrThrow(+id);
   }
 
-  @Post()
+  @Post(':userId')
   @ApiOperation({ summary: 'Create Profile' })
-  async createProfile(@Req() req, @Body() profileDto: CreateProfileDto) {
-    const userId = req.user.id;
-    return this.profileService.createOrUpdateProfile(userId, profileDto);
+  async createProfile(
+    @Param('userId') userId: string,
+    @Body() profileDto: CreateProfileDto,
+  ) {
+    return this.profileService.createOrUpdateProfile(+userId, profileDto);
   }
 
   @Patch(':id')
