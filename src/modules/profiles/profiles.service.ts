@@ -85,4 +85,33 @@ export class ProfileService {
 
     return this.profileRepository.save(profile);
   }
+
+  async getIndustryDistribution(): Promise<
+    { industry: string; percentage: number }[]
+  > {
+    const result = await this.profileRepository
+      .createQueryBuilder('profile')
+      .select('profile.industry', 'industry')
+      .addSelect('COUNT(*)', 'count')
+      .groupBy('profile.industry')
+      .getRawMany();
+
+    const total = result.reduce((sum, item) => sum + parseInt(item.count), 0);
+    return result.map((item) => ({
+      industry: item.industry || 'Unknown',
+      percentage: (parseInt(item.count) / total) * 100,
+    }));
+  }
+
+  async getExperienceOverview(): Promise<
+    { yearsOfExperience: number; count: number }[]
+  > {
+    return this.profileRepository
+      .createQueryBuilder('profile')
+      .select('profile.yearsOfExperience', 'yearsOfExperience')
+      .addSelect('COUNT(*)', 'count')
+      .groupBy('profile.yearsOfExperience')
+      .orderBy('profile.yearsOfExperience', 'ASC')
+      .getRawMany();
+  }
 }

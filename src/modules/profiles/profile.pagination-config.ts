@@ -8,6 +8,7 @@ export const PROFILE_PAGINATION_CONFIG: PaginateConfig<Profile> = {
   ignoreSearchByInQueryParam: true,
   filterableColumns: {
     name: [FilterOperator.EQ, FilterOperator.IN],
+    title: [FilterOperator.EQ, FilterOperator.IN],
   },
   relations: {
     user: true,
