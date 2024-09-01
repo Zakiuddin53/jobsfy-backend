@@ -1,5 +1,3 @@
-// src/modules/charts/charts.controller.ts
-
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ProfileService } from '../profiles/profiles.service';
@@ -12,14 +10,26 @@ export class ChartController {
   constructor(private readonly profileService: ProfileService) {}
 
   @Get('industry-distribution')
-  @ApiOperation({ summary: 'Get Industry Distribution' })
+  @ApiOperation({ summary: 'Industry Distribution' })
   async getIndustryDistribution() {
     return this.profileService.getIndustryDistribution();
   }
 
   @Get('experience-overview')
-  @ApiOperation({ summary: 'Get Experience Overview' })
+  @ApiOperation({ summary: 'Experience Overview' })
   async getExperienceOverview() {
     return this.profileService.getExperienceOverview();
+  }
+
+  @Get('level-distribution')
+  @ApiOperation({ summary: 'level distribution' })
+  async getLevelDistribution() {
+    return this.profileService.getLevelDistribution();
+  }
+
+  @Get('country-distribution')
+  @ApiOperation({ summary: 'country distribution' })
+  async getCountryDistribution() {
+    return this.profileService.getCountryDistribution();
   }
 }

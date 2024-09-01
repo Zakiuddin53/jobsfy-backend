@@ -114,4 +114,33 @@ export class ProfileService {
       .orderBy('profile.yearsOfExperience', 'ASC')
       .getRawMany();
   }
+
+  async getLevelDistribution(): Promise<
+    { positionLevel: string; percentage: number }[]
+  > {
+    const result = await this.profileRepository
+      .createQueryBuilder('profile')
+      .select('profile.positionLevel', 'positionLevel')
+      .addSelect('COUNT(*)', 'count')
+      .groupBy('profile.positionLevel')
+      .getRawMany();
+
+    const total = result.reduce((sum, item) => sum + parseInt(item.count), 0);
+    return result.map((item) => ({
+      positionLevel: item.positionLevel || 'Unknown',
+      percentage: (parseInt(item.count) / total) * 100,
+    }));
+  }
+
+  async getCountryDistribution(): Promise<
+    { country: number; count: number }[]
+  > {
+    return this.profileRepository
+      .createQueryBuilder('profile')
+      .select('profile.country', 'country')
+      .addSelect('COUNT(*)', 'count')
+      .groupBy('profile.country')
+      .orderBy('profile.country', 'ASC')
+      .getRawMany();
+  }
 }
