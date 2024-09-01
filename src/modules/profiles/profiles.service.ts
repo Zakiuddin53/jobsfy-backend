@@ -51,10 +51,8 @@ export class ProfileService {
     let profile = await this.getProfileByUserId(userId);
 
     if (profile) {
-      // Update existing profile
       Object.assign(profile, profileDto);
     } else {
-      // Create new profile
       profile = this.profileRepository.create({
         ...profileDto,
         user: { id: userId },

@@ -19,13 +19,11 @@ export class AuthService {
     password: string,
   ): Promise<AuthenticatedUserDto> {
     const user = await this.usersService.findOneByEmail(email);
-
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
-
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -44,17 +42,15 @@ export class AuthService {
     const existingUser = await this.usersService.findOneByEmail(
       registerDto.email,
     );
-
     if (existingUser) {
       throw new UnauthorizedException('Email already exists');
     }
 
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
-
     const newUser = await this.usersService.create({
       ...registerDto,
       password: hashedPassword,
-      role: 'user', // Default role
+      role: 'user',
     });
 
     return this.login(newUser);
@@ -65,7 +61,6 @@ export class AuthService {
       refreshToken,
       userId,
     );
-
     if (!user) {
       throw new UnauthorizedException('Invalid refresh token');
     }
