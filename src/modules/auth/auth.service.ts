@@ -5,6 +5,8 @@ import * as bcrypt from 'bcrypt';
 import { UserService } from '../users/users.service';
 import { RegisterRequestDto } from './dtos/register-request.dto';
 import { AuthenticatedUserDto } from './dtos/authenticate-user.dto';
+import { ProfileService } from '../profiles/profiles.service';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +14,7 @@ export class AuthService {
     private usersService: UserService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private profileService: ProfileService,
   ) {}
 
   async validateUser(
@@ -19,17 +22,24 @@ export class AuthService {
     password: string,
   ): Promise<AuthenticatedUserDto> {
     const user = await this.usersService.findOneByEmail(email);
+
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
+
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
     const { password: _, ...result } = user;
-    return result as AuthenticatedUserDto;
+    return {
+      id: result.id,
+      email: result.email,
+      role: result.role,
+      userType: result.userType,
+    };
   }
 
   async login(user: any) {
@@ -38,21 +48,8 @@ export class AuthService {
     return tokens;
   }
 
-  async register(registerDto: RegisterRequestDto) {
-    const existingUser = await this.usersService.findOneByEmail(
-      registerDto.email,
-    );
-    if (existingUser) {
-      throw new UnauthorizedException('Email already exists');
-    }
-
-    const hashedPassword = await bcrypt.hash(registerDto.password, 10);
-    const newUser = await this.usersService.create({
-      ...registerDto,
-      password: hashedPassword,
-      role: 'user',
-    });
-
+  async register(registerDto: CreateUserDto) {
+    const newUser = await this.usersService.create(registerDto);
     return this.login(newUser);
   }
 

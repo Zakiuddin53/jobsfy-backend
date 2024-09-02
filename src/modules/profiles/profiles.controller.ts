@@ -4,14 +4,19 @@ import {
   Get,
   Post,
   Patch,
-  Req,
   UseGuards,
   NotFoundException,
   Param,
   ForbiddenException,
-  UnauthorizedException,
+  HttpStatus,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ProfileService } from './profiles.service';
 import { Paginate, PaginatedSwaggerDocs, PaginateQuery } from 'nestjs-paginate';
 import { Profile } from './entites/profile.entity';
@@ -19,6 +24,7 @@ import { PROFILE_PAGINATION_CONFIG } from './profile.pagination-config';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { JwtGuard } from '../auth/guards/jwt.guard';
+import { User } from '../auth/decorators/user.decorator';
 
 @Controller('profile')
 @UseGuards(JwtGuard)
@@ -33,38 +39,46 @@ export class ProfileController {
     return this.profileService.paginate(query);
   }
 
-  @ApiOperation({ summary: 'Get Single' })
   @Get(':id')
-  getSingle(@Param('id') id: string) {
+  @ApiOperation({ summary: 'Get Single Profile' })
+  async getSingle(@Param('id') id: string) {
     return this.profileService.findOneOrThrow(+id);
   }
 
-  @Post(':userId')
+  @Get('me')
+  @ApiOperation({ summary: 'Get Own Profile' })
+  async getOwnProfile(@User() user) {
+    return this.profileService.findOneOrThrow(user.id);
+  }
+
+  @Post()
   @ApiOperation({ summary: 'Create Profile' })
+  @ApiBody({ type: CreateProfileDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Profile created successfully',
+    type: Profile,
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Profile already exists',
+  })
   async createProfile(
-    @Param('userId') userId: string,
-    @Body() profileDto: CreateProfileDto,
+    @User() user,
+    @Body() createProfileDto: CreateProfileDto,
   ) {
-    return this.profileService.createOrUpdateProfile(+userId, profileDto);
+    const profile = await this.profileService.create(user.id, createProfileDto);
+    return { statusCode: HttpStatus.CREATED, data: profile };
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Update User Profile' })
+  @ApiOperation({ summary: 'Update Profile' })
   async updateProfile(
     @Param('id') id: string,
-    @Req() req,
+    @User() user,
     @Body() updateProfileDto: UpdateProfileDto,
   ) {
-    const userId = req.user?.id;
-
-    if (!userId) {
-      throw new UnauthorizedException('User not authenticated');
-    }
-
-    if (userId !== parseInt(id)) {
-      throw new ForbiddenException('You can only update your own profile');
-    }
-
-    return this.profileService.createOrUpdateProfile(userId, updateProfileDto);
+    return this.profileService.update(+id, updateProfileDto);
   }
 }

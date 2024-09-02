@@ -1,4 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Profile } from './entites/profile.entity';
@@ -6,12 +12,15 @@ import { PaginateQuery, paginate } from 'nestjs-paginate';
 import { PROFILE_PAGINATION_CONFIG } from './profile.pagination-config';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { UserService } from '../users/users.service';
 
 @Injectable()
 export class ProfileService {
   constructor(
     @InjectRepository(Profile)
     private readonly profileRepository: Repository<Profile>,
+    @Inject(forwardRef(() => UserService))
+    private readonly userService: UserService,
   ) {}
 
   async paginate(query: PaginateQuery) {
@@ -22,64 +31,69 @@ export class ProfileService {
     );
   }
 
-  async getProfileByUserId(userId: number): Promise<Profile | undefined> {
-    return this.profileRepository.findOne({
+  async findOneOrThrow(id: number): Promise<Profile> {
+    const profile = await this.profileRepository.findOne({
+      where: { id },
+      relations: ['user'],
+    });
+    if (!profile) {
+      throw new NotFoundException('Profile not found');
+    }
+    return profile;
+  }
+
+  async create(
+    userId: number,
+    createProfileDto: CreateProfileDto,
+  ): Promise<Profile> {
+    const existingProfile = await this.profileRepository.findOne({
       where: { user: { id: userId } },
     });
-  }
 
-  async findOneOrThrow(id: number) {
-    return this.profileRepository.findOneOrFail({
-      where: { id },
-      relations: {
-        user: true,
-      },
-    });
-  }
-
-  async createEmptyProfile(userId: number): Promise<Profile> {
-    const emptyProfile = this.profileRepository.create({
-      user: { id: userId },
-    });
-    return this.profileRepository.save(emptyProfile);
-  }
-
-  async createOrUpdateProfile(
-    userId: number,
-    profileDto: CreateProfileDto | UpdateProfileDto,
-  ): Promise<Profile> {
-    let profile = await this.getProfileByUserId(userId);
-
-    if (profile) {
-      Object.assign(profile, profileDto);
-    } else {
-      profile = this.profileRepository.create({
-        ...profileDto,
-        user: { id: userId },
-      });
+    if (existingProfile) {
+      throw new ForbiddenException('Profile already exists for this user');
     }
+
+    const user = await this.userService.findOneOrThrow(userId);
+    const profile = this.profileRepository.create(createProfileDto);
+    profile.user = user;
 
     return this.profileRepository.save(profile);
   }
 
-  async updateProfile(
-    userId: number,
-    profileDto: UpdateProfileDto,
+  async update(
+    id: number,
+    updateProfileDto: UpdateProfileDto,
   ): Promise<Profile> {
-    const profile = await this.profileRepository.findOne({
-      where: { user: { id: userId } },
-    });
+    const profile = await this.findOneOrThrow(id);
 
-    if (!profile) {
-      throw new NotFoundException('Profile not found');
-    }
-
-    // Only update fields that are provided in the DTO
-    Object.keys(profileDto).forEach((key) => {
-      if (profileDto[key] !== undefined) {
-        profile[key] = profileDto[key];
-      }
-    });
+    // Manually update each property
+    profile.firstName = updateProfileDto.firstName ?? profile.firstName;
+    profile.lastName = updateProfileDto.lastName ?? profile.lastName;
+    profile.gender = updateProfileDto.gender ?? profile.gender;
+    profile.country = updateProfileDto.country ?? profile.country;
+    profile.state = updateProfileDto.state ?? profile.state;
+    profile.city = updateProfileDto.city ?? profile.city;
+    profile.industry = updateProfileDto.industry ?? profile.industry;
+    profile.companyName = updateProfileDto.companyName ?? profile.companyName;
+    profile.level = updateProfileDto.level ?? profile.level;
+    profile.department = updateProfileDto.department ?? profile.department;
+    profile.title = updateProfileDto.title ?? profile.title;
+    profile.fieldOfStudy =
+      updateProfileDto.fieldOfStudy ?? profile.fieldOfStudy;
+    profile.university = updateProfileDto.university ?? profile.university;
+    profile.lookingFor = updateProfileDto.lookingFor ?? profile.lookingFor;
+    profile.positionLevel =
+      updateProfileDto.positionLevel ?? profile.positionLevel;
+    profile.salary = updateProfileDto.salary ?? profile.salary;
+    profile.division = updateProfileDto.division ?? profile.division;
+    profile.dob = updateProfileDto.dob ?? profile.dob;
+    profile.address = updateProfileDto.address ?? profile.address;
+    profile.job = updateProfileDto.job ?? profile.job;
+    profile.yearsOfExperience =
+      updateProfileDto.yearsOfExperience ?? profile.yearsOfExperience;
+    profile.yearsAtCurrentCompany =
+      updateProfileDto.yearsAtCurrentCompany ?? profile.yearsAtCurrentCompany;
 
     return this.profileRepository.save(profile);
   }

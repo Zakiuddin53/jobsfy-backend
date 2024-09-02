@@ -1,12 +1,13 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Profile } from './entites/profile.entity';
 import { ProfileController } from './profiles.controller';
 import { ProfileService } from './profiles.service';
 import { ChartController } from './charts.controller';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Profile])],
+  imports: [TypeOrmModule.forFeature([Profile]), forwardRef(() => UsersModule)],
   controllers: [ProfileController, ChartController],
   providers: [ProfileService],
   exports: [ProfileService],

@@ -9,12 +9,15 @@ import { User } from './entites/user.entity';
 import { paginate, PaginateQuery } from 'nestjs-paginate';
 import { USER_PAGINATION_CONFIG } from './user.pagination-config';
 import * as bcrypt from 'bcrypt';
+import { CreateUserDto } from './dto/create-user.dto';
+import { ProfileService } from '../profiles/profiles.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly profileService: ProfileService,
   ) {}
 
   async paginate(query: PaginateQuery) {
@@ -25,13 +28,10 @@ export class UserService {
     return this.userRepository.findOneBy({ email });
   }
 
-  async getCurrentUser(userId: number): Promise<User> {
-    if (!userId) {
-      throw new UnauthorizedException('User ID is missing');
-    }
+  async findOneOrThrow(id: number) {
     const user = await this.userRepository.findOne({
-      where: { id: userId },
-      select: ['id', 'username', 'email', 'role'],
+      where: { id },
+      relations: ['user'],
     });
     if (!user) {
       throw new NotFoundException('User not found');
@@ -39,9 +39,33 @@ export class UserService {
     return user;
   }
 
-  async create(userData: Partial<Omit<User, 'id' | 'profile'>>): Promise<User> {
-    const newUser = this.userRepository.create(userData);
-    return this.userRepository.save(newUser);
+  async getCurrentUser(userId: number): Promise<User> {
+    if (!userId) {
+      throw new UnauthorizedException('User ID is missing');
+    }
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      select: ['id', 'email', 'userType', 'role'],
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
+  }
+
+  async create(userData: CreateUserDto): Promise<User> {
+    const { email, password, userType, ...profileData } = userData;
+
+    const user = this.userRepository.create({
+      email,
+      password,
+      userType,
+    });
+
+    const savedUser = await this.userRepository.save(user);
+    await this.profileService.create(savedUser.id, profileData);
+
+    return savedUser;
   }
 
   update(

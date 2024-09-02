@@ -9,9 +9,16 @@ import { UsersModule } from './modules/users/users.module';
 import { JwtGuard } from './modules/auth/guards/jwt.guard';
 import { PassportModule } from '@nestjs/passport';
 import { SeedModule } from './modules/seed/seed.module';
+import { APP_FILTER } from '@nestjs/core';
+import { AllExceptionsFilter } from './exceptions-filters/all-exceptions.filter';
+import { BadRequestErrorFilter } from './exceptions-filters/bad-request-error.filter';
 
 @Module({
   imports: [
+    ProfileModule,
+    UsersModule,
+    AuthModule,
+
     ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -27,9 +34,6 @@ import { SeedModule } from './modules/seed/seed.module';
       }),
       inject: [ConfigService],
     }),
-    ProfileModule,
-    UsersModule,
-    AuthModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     SeedModule,
   ],
@@ -40,13 +44,14 @@ import { SeedModule } from './modules/seed/seed.module';
       provide: 'APP_GUARD',
       useClass: JwtGuard,
     },
+    // {
+    //   provide: APP_FILTER,
+    //   useClass: AllExceptionsFilter,
+    // },
+    // {
+    //   provide: APP_FILTER,
+    //   useClass: BadRequestErrorFilter,
+    // },
   ],
 })
-export class AppModule {
-  constructor(private configService: ConfigService) {
-    console.log(
-      'JWT Secret in AppModule:',
-      this.configService.get<string>('JWT_SECRET'),
-    );
-  }
-}
+export class AppModule {}

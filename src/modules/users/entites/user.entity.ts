@@ -1,15 +1,17 @@
-// src/modules/users/entities/user.entity.ts
-
 import { Profile } from '../../profiles/entites/profile.entity';
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToOne,
+  BeforeInsert,
+} from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('increment')
   id: number;
-
-  @Column({ unique: true })
-  username: string;
 
   @Column({ unique: true })
   email: string;
@@ -20,9 +22,20 @@ export class User {
   @Column({ default: 'user' })
   role: string;
 
+  @Column({
+    type: 'enum',
+    enum: ['corporate', 'muslim-company', 'unemployed', 'admin'],
+  })
+  userType: string;
+
   @Column({ nullable: true })
   refreshToken: string;
 
-  @OneToOne(() => Profile, (e) => e.user)
+  @OneToOne(() => Profile, (profile) => profile.user)
   profile: Profile;
+
+  @BeforeInsert()
+  async hashPassword() {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
 }

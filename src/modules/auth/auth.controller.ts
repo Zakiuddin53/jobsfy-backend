@@ -5,6 +5,7 @@ import { RegisterRequestDto } from './dtos/register-request.dto';
 import { Public } from './decorators/public.decorator';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -20,9 +21,9 @@ export class AuthController {
   }
 
   @Public()
-  @ApiOperation({ summary: 'register' })
+  @ApiOperation({ summary: 'Register new user' })
   @Post('register')
-  async register(@Body() registerBody: RegisterRequestDto) {
+  async register(@Body() registerBody: CreateUserDto) {
     return this.authService.register(registerBody);
   }
 

@@ -5,7 +5,6 @@ import {
   Column,
   OneToOne,
   JoinColumn,
-  CreateDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -14,22 +13,22 @@ export class Profile {
   id: number;
 
   @Column({ nullable: true })
-  address: string;
-
-  @CreateDateColumn()
-  dob: Date;
+  firstName: string;
 
   @Column({ nullable: true })
-  job: string;
+  lastName: string;
 
   @Column({ nullable: true })
-  salary: number;
+  gender: string;
 
   @Column({ nullable: true })
-  title: string;
+  country: string;
 
   @Column({ nullable: true })
-  positionLevel: string;
+  state: string;
+
+  @Column({ nullable: true })
+  city: string;
 
   @Column({ nullable: true })
   industry: string;
@@ -38,28 +37,47 @@ export class Profile {
   companyName: string;
 
   @Column({ nullable: true })
+  level: string;
+
+  @Column({ nullable: true })
   department: string;
+
+  @Column({ nullable: true })
+  title: string;
+
+  @Column({ nullable: true })
+  fieldOfStudy: string;
+
+  @Column({ nullable: true })
+  university: string;
+
+  @Column({ nullable: true })
+  lookingFor: string;
+
+  // New fields
+  @Column({ nullable: true })
+  positionLevel: string;
+
+  @Column({ nullable: true })
+  salary: number;
 
   @Column({ nullable: true })
   division: string;
 
-  @Column({ nullable: true })
-  city: string;
+  @Column({ type: 'date', nullable: true })
+  dob: Date;
 
   @Column({ nullable: true })
-  state: string;
+  address: string;
 
   @Column({ nullable: true })
-  country: string;
+  job: string;
 
   @Column({ nullable: true })
   yearsOfExperience: number;
 
   @Column({ nullable: true })
   yearsAtCurrentCompany: number;
-
-  @Column({ nullable: true })
-  gender: string;
 
   @OneToOne(() => User, (user) => user.profile)
   @JoinColumn()

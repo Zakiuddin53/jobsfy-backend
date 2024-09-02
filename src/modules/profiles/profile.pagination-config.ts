@@ -5,7 +5,6 @@ export const PROFILE_PAGINATION_CONFIG: PaginateConfig<Profile> = {
   defaultSortBy: [['id', 'ASC']],
   searchableColumns: [
     'title',
-    'address',
     'city',
     'companyName',
     'country',
@@ -14,7 +13,6 @@ export const PROFILE_PAGINATION_CONFIG: PaginateConfig<Profile> = {
     'dob',
     'gender',
     'industry',
-    'job',
     'positionLevel',
     'salary',
     'state',
@@ -22,7 +20,6 @@ export const PROFILE_PAGINATION_CONFIG: PaginateConfig<Profile> = {
   ],
   sortableColumns: [
     'title',
-    'address',
     'city',
     'companyName',
     'country',
@@ -31,7 +28,6 @@ export const PROFILE_PAGINATION_CONFIG: PaginateConfig<Profile> = {
     'dob',
     'gender',
     'industry',
-    'job',
     'positionLevel',
     'salary',
     'state',

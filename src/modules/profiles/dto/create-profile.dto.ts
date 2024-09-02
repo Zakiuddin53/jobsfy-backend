@@ -1,66 +1,97 @@
-// src/modules/profiles/dto/create-profile.dto.ts
-
-import { IsString, IsNumber, IsDateString, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsNumber,
+  IsDate,
+} from 'class-validator';
 
 export class CreateProfileDto {
-  @IsOptional()
   @IsString()
-  address?: string;
+  @IsNotEmpty()
+  firstName: string;
 
+  @IsString()
+  @IsNotEmpty()
+  lastName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  gender: string;
+
+  @IsString()
+  @IsNotEmpty()
+  country: string;
+
+  @IsString()
+  @IsNotEmpty()
+  state: string;
+
+  @IsString()
+  @IsNotEmpty()
+  city: string;
+
+  @IsString()
   @IsOptional()
-  @IsDateString()
+  industry?: string;
+
+  @IsString()
+  @IsOptional()
+  companyName?: string;
+
+  @IsString()
+  @IsOptional()
+  level?: string;
+
+  @IsString()
+  @IsOptional()
+  department?: string;
+
+  @IsString()
+  @IsOptional()
+  title?: string;
+
+  @IsString()
+  @IsOptional()
+  fieldOfStudy?: string;
+
+  @IsString()
+  @IsOptional()
+  university?: string;
+
+  @IsString()
+  @IsOptional()
+  lookingFor?: string;
+
+  @IsString()
+  @IsOptional()
+  positionLevel?: string;
+
+  @IsNumber()
+  @IsOptional()
+  salary?: number;
+
+  @IsString()
+  @IsOptional()
+  division?: string;
+
+  @IsDate()
+  @IsOptional()
   dob?: Date;
 
-  @IsOptional()
   @IsString()
+  @IsOptional()
+  address?: string;
+
+  @IsString()
+  @IsOptional()
   job?: string;
 
   @IsNumber()
-  salary: number;
-
   @IsOptional()
-  @IsString()
-  title?: string;
-
-  @IsOptional()
-  @IsString()
-  positionLevel?: string;
-
-  @IsOptional()
-  @IsString()
-  industry?: string;
-
-  @IsOptional()
-  @IsString()
-  companyName?: string;
-
-  @IsOptional()
-  @IsString()
-  department?: string;
-
-  @IsOptional()
-  @IsString()
-  division?: string;
-
-  @IsOptional()
-  @IsString()
-  city?: string;
-
-  @IsOptional()
-  @IsString()
-  state?: string;
-
-  @IsOptional()
-  @IsString()
-  country?: string;
+  yearsOfExperience?: number;
 
   @IsNumber()
-  yearsOfExperience: number;
-
-  @IsNumber()
-  yearsAtCurrentCompany: number;
-
   @IsOptional()
-  @IsString()
-  gender?: string;
+  yearsAtCurrentCompany?: number;
 }
