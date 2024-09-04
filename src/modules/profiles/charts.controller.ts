@@ -1,11 +1,11 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ProfileService } from '../profiles/profiles.service';
-import { JwtGuard } from '../auth/guards/jwt.guard';
+import { Public } from '../auth/decorators/public.decorator';
 
 @Controller('charts')
-@UseGuards(JwtGuard)
 @ApiTags('Charts')
+@Public()
 export class ChartController {
   constructor(private readonly profileService: ProfileService) {}
 

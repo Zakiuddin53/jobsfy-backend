@@ -31,7 +31,7 @@ export class UserService {
   async findOneOrThrow(id: number) {
     const user = await this.userRepository.findOne({
       where: { id },
-      relations: ['user'],
+      relations: ['profile'],
     });
     if (!user) {
       throw new NotFoundException('User not found');
@@ -65,7 +65,7 @@ export class UserService {
     const savedUser = await this.userRepository.save(user);
     await this.profileService.create(savedUser.id, profileData);
 
-    return savedUser;
+    return this.findOneOrThrow(savedUser.id);
   }
 
   update(
