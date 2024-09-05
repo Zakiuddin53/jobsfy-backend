@@ -4,10 +4,11 @@ import { User } from './entites/user.entity';
 export const USER_PAGINATION_CONFIG: PaginateConfig<User> = {
   defaultSortBy: [['id', 'ASC']],
   searchableColumns: ['email'],
-  sortableColumns: ['email'],
+  sortableColumns: ['email', 'userType'],
   ignoreSearchByInQueryParam: true,
   filterableColumns: {
     name: [FilterOperator.EQ, FilterOperator.IN],
+    userType: [FilterOperator.EQ, FilterOperator.IN],
   },
   relations: {
     profile: true,

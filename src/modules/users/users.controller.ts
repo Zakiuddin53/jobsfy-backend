@@ -22,6 +22,6 @@ export class UserController {
   @UseGuards(JwtGuard)
   @ApiOperation({ summary: 'Get Current User' })
   async getCurrentUser(@Req() req) {
-    return this.userService.getCurrentUser(req.user.userId);
+    return this.userService.findOneOrThrow(req.user.userId);
   }
 }

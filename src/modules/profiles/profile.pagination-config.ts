@@ -4,6 +4,8 @@ import { Profile } from './entites/profile.entity';
 export const PROFILE_PAGINATION_CONFIG: PaginateConfig<Profile> = {
   defaultSortBy: [['id', 'ASC']],
   searchableColumns: [
+    'firstName',
+    'lastName',
     'title',
     'city',
     'companyName',
@@ -19,6 +21,8 @@ export const PROFILE_PAGINATION_CONFIG: PaginateConfig<Profile> = {
     'title',
   ],
   sortableColumns: [
+    'firstName',
+    'lastName',
     'title',
     'city',
     'companyName',
@@ -35,7 +39,8 @@ export const PROFILE_PAGINATION_CONFIG: PaginateConfig<Profile> = {
   ],
   ignoreSearchByInQueryParam: true,
   filterableColumns: {
-    name: [FilterOperator.EQ, FilterOperator.IN, FilterOperator.ILIKE],
+    firstName: [FilterOperator.EQ, FilterOperator.IN, FilterOperator.ILIKE],
+    lastName: [FilterOperator.EQ, FilterOperator.IN, FilterOperator.ILIKE],
     title: [FilterOperator.EQ, FilterOperator.IN, FilterOperator.ILIKE],
     address: [FilterOperator.EQ, FilterOperator.IN, FilterOperator.ILIKE],
     city: [FilterOperator.EQ, FilterOperator.IN, FilterOperator.ILIKE],

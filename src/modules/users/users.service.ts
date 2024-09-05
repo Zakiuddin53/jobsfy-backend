@@ -31,21 +31,8 @@ export class UserService {
   async findOneOrThrow(id: number) {
     const user = await this.userRepository.findOne({
       where: { id },
-      relations: ['profile'],
-    });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    return user;
-  }
-
-  async getCurrentUser(userId: number): Promise<User> {
-    if (!userId) {
-      throw new UnauthorizedException('User ID is missing');
-    }
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
       select: ['id', 'email', 'userType', 'role'],
+      relations: ['profile'],
     });
     if (!user) {
       throw new NotFoundException('User not found');
