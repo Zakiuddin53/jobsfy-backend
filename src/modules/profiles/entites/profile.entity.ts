@@ -54,31 +54,6 @@ export class Profile {
   @Column({ nullable: true })
   lookingFor: string;
 
-  // New fields
-  @Column({ nullable: true })
-  positionLevel: string;
-
-  @Column({ nullable: true })
-  salary: number;
-
-  @Column({ nullable: true })
-  division: string;
-
-  @Column({ type: 'date', nullable: true })
-  dob: Date;
-
-  @Column({ nullable: true })
-  address: string;
-
-  @Column({ nullable: true })
-  job: string;
-
-  @Column({ nullable: true })
-  yearsOfExperience: number;
-
-  @Column({ nullable: true })
-  yearsAtCurrentCompany: number;
-
   @OneToOne(() => User, (user) => user.profile)
   @JoinColumn()
   user: User;

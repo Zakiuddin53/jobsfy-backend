@@ -11,12 +11,10 @@ export const PROFILE_PAGINATION_CONFIG: PaginateConfig<Profile> = {
     'companyName',
     'country',
     'department',
-    'division',
-    'dob',
+
     'gender',
     'industry',
-    'positionLevel',
-    'salary',
+
     'state',
     'title',
   ],
@@ -28,12 +26,10 @@ export const PROFILE_PAGINATION_CONFIG: PaginateConfig<Profile> = {
     'companyName',
     'country',
     'department',
-    'division',
-    'dob',
+
     'gender',
     'industry',
-    'positionLevel',
-    'salary',
+
     'state',
     'title',
   ],
@@ -47,13 +43,9 @@ export const PROFILE_PAGINATION_CONFIG: PaginateConfig<Profile> = {
     companyName: [FilterOperator.EQ, FilterOperator.IN, FilterOperator.ILIKE],
     country: [FilterOperator.EQ, FilterOperator.IN, FilterOperator.ILIKE],
     department: [FilterOperator.EQ, FilterOperator.IN, FilterOperator.ILIKE],
-    division: [FilterOperator.EQ, FilterOperator.IN, FilterOperator.ILIKE],
-    dob: [FilterOperator.EQ, FilterOperator.IN, FilterOperator.ILIKE],
     gender: [FilterOperator.EQ, FilterOperator.IN, FilterOperator.ILIKE],
     industry: [FilterOperator.EQ, FilterOperator.IN, FilterOperator.ILIKE],
     job: [FilterOperator.EQ, FilterOperator.IN, FilterOperator.ILIKE],
-    positionLevel: [FilterOperator.EQ, FilterOperator.IN, FilterOperator.ILIKE],
-    salary: [FilterOperator.EQ, FilterOperator.IN, FilterOperator.ILIKE],
     state: [FilterOperator.EQ, FilterOperator.IN, FilterOperator.ILIKE],
   },
   relations: {

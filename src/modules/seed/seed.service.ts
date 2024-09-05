@@ -28,14 +28,7 @@ export class SeedService {
         userType: 'admin',
       });
 
-      const savedAdminUser = await this.userRepository.save(adminUser);
-
-      // Create an empty profile for the admin user
-      const adminProfile = this.profileRepository.create({
-        user: savedAdminUser,
-      });
-
-      await this.profileRepository.save(adminProfile);
+      await this.userRepository.save(adminUser);
 
       console.log('Admin user seeded successfully');
     } else {

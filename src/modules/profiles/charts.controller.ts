@@ -1,5 +1,5 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Query } from '@nestjs/common';
+import { ApiOperation, ApiTags, ApiQuery } from '@nestjs/swagger';
 import { ProfileService } from '../profiles/profiles.service';
 import { Public } from '../auth/decorators/public.decorator';
 
@@ -9,27 +9,47 @@ import { Public } from '../auth/decorators/public.decorator';
 export class ChartController {
   constructor(private readonly profileService: ProfileService) {}
 
-  @Get('industry-distribution')
-  @ApiOperation({ summary: 'Industry Distribution' })
-  async getIndustryDistribution() {
-    return this.profileService.getIndustryDistribution();
-  }
-
-  @Get('experience-overview')
-  @ApiOperation({ summary: 'Experience Overview' })
-  async getExperienceOverview() {
-    return this.profileService.getExperienceOverview();
-  }
-
   @Get('level-distribution')
-  @ApiOperation({ summary: 'level distribution' })
-  async getLevelDistribution() {
-    return this.profileService.getLevelDistribution();
+  @ApiOperation({ summary: 'Level Distribution' })
+  @ApiQuery({
+    name: 'userType',
+    required: false,
+    enum: ['corporate', 'muslim-company', 'unemployed', 'admin'],
+  })
+  async getLevelDistribution(@Query('userType') userType?: string) {
+    return this.profileService.getLevelDistribution(userType);
   }
 
-  @Get('country-distribution')
-  @ApiOperation({ summary: 'country distribution' })
-  async getCountryDistribution() {
-    return this.profileService.getCountryDistribution();
+  @Get('gender-distribution')
+  @ApiOperation({ summary: 'Gender Distribution' })
+  @ApiQuery({
+    name: 'userType',
+    required: false,
+    enum: ['corporate', 'muslim-company', 'unemployed', 'admin'],
+  })
+  async getGenderDistribution(@Query('userType') userType?: string) {
+    return this.profileService.getGenderDistribution(userType);
+  }
+
+  @Get('company-distribution')
+  @ApiOperation({ summary: 'Company Distribution' })
+  @ApiQuery({
+    name: 'userType',
+    required: false,
+    enum: ['corporate', 'muslim-company', 'unemployed', 'admin'],
+  })
+  async getCompanyDistribution(@Query('userType') userType?: string) {
+    return this.profileService.getCompanyDistribution(userType);
+  }
+
+  @Get('department-distribution')
+  @ApiOperation({ summary: 'Departement Distribution' })
+  @ApiQuery({
+    name: 'userType',
+    required: false,
+    enum: ['corporate', 'muslim-company', 'unemployed'],
+  })
+  async getDepartementDistribution(@Query('userType') userType?: string) {
+    return this.profileService.getDepartementDistribution(userType);
   }
 }

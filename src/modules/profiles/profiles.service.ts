@@ -83,76 +83,113 @@ export class ProfileService {
       updateProfileDto.fieldOfStudy ?? profile.fieldOfStudy;
     profile.university = updateProfileDto.university ?? profile.university;
     profile.lookingFor = updateProfileDto.lookingFor ?? profile.lookingFor;
-    profile.positionLevel =
-      updateProfileDto.positionLevel ?? profile.positionLevel;
-    profile.salary = updateProfileDto.salary ?? profile.salary;
-    profile.division = updateProfileDto.division ?? profile.division;
-    profile.dob = updateProfileDto.dob ?? profile.dob;
-    profile.address = updateProfileDto.address ?? profile.address;
-    profile.job = updateProfileDto.job ?? profile.job;
-    profile.yearsOfExperience =
-      updateProfileDto.yearsOfExperience ?? profile.yearsOfExperience;
-    profile.yearsAtCurrentCompany =
-      updateProfileDto.yearsAtCurrentCompany ?? profile.yearsAtCurrentCompany;
 
     return this.profileRepository.save(profile);
   }
 
-  async getIndustryDistribution(): Promise<
-    { industry: string; percentage: number }[]
-  > {
-    const result = await this.profileRepository
+  private getBaseQuery(userType?: string) {
+    let query = this.profileRepository
       .createQueryBuilder('profile')
-      .select('profile.industry', 'industry')
+      .innerJoinAndSelect('profile.user', 'user');
+
+    if (userType) {
+      query = query.andWhere('user.userType = :userType', { userType });
+    }
+
+    return query;
+  }
+
+  async getLevelDistribution(
+    userType?: string,
+  ): Promise<{ level: string; percentage: number }[]> {
+    let query = this.profileRepository
+      .createQueryBuilder('profile')
+      .innerJoinAndSelect('profile.user', 'user')
+      .select('profile.level', 'level')
       .addSelect('COUNT(*)', 'count')
-      .groupBy('profile.industry')
-      .getRawMany();
+      .where('profile.level IS NOT NULL');
+
+    if (userType) {
+      query = query.andWhere('user.userType = :userType', { userType });
+    }
+
+    query = query.groupBy('profile.level');
+
+    const result = await query.getRawMany();
 
     const total = result.reduce((sum, item) => sum + parseInt(item.count), 0);
     return result.map((item) => ({
-      industry: item.industry || 'Unknown',
+      level: item.level || 'Unknown',
       percentage: (parseInt(item.count) / total) * 100,
     }));
   }
 
-  async getExperienceOverview(): Promise<
-    { yearsOfExperience: number; count: number }[]
-  > {
-    return this.profileRepository
+  async getGenderDistribution(
+    userType?: string,
+  ): Promise<{ gender: string; percentage: number }[]> {
+    let query = this.profileRepository
       .createQueryBuilder('profile')
-      .select('profile.yearsOfExperience', 'yearsOfExperience')
+      .innerJoinAndSelect('profile.user', 'user')
+      .select('profile.gender', 'gender')
       .addSelect('COUNT(*)', 'count')
-      .groupBy('profile.yearsOfExperience')
-      .orderBy('profile.yearsOfExperience', 'ASC')
-      .getRawMany();
-  }
+      .where('profile.gender IS NOT NULL');
 
-  async getLevelDistribution(): Promise<
-    { positionLevel: string; percentage: number }[]
-  > {
-    const result = await this.profileRepository
-      .createQueryBuilder('profile')
-      .select('profile.positionLevel', 'positionLevel')
-      .addSelect('COUNT(*)', 'count')
-      .groupBy('profile.positionLevel')
-      .getRawMany();
+    if (userType) {
+      query = query.andWhere('user.userType = :userType', { userType });
+    }
+
+    query = query.groupBy('profile.gender');
+
+    const result = await query.getRawMany();
 
     const total = result.reduce((sum, item) => sum + parseInt(item.count), 0);
     return result.map((item) => ({
-      positionLevel: item.positionLevel || 'Unknown',
+      gender: item.gender,
       percentage: (parseInt(item.count) / total) * 100,
     }));
   }
 
-  async getCountryDistribution(): Promise<
-    { country: number; count: number }[]
-  > {
-    return this.profileRepository
+  async getCompanyDistribution(
+    userType?: string,
+  ): Promise<{ company: string; count: number }[]> {
+    let query = this.profileRepository
       .createQueryBuilder('profile')
-      .select('profile.country', 'country')
+      .innerJoinAndSelect('profile.user', 'user')
+      .select('profile.companyName', 'company')
       .addSelect('COUNT(*)', 'count')
-      .groupBy('profile.country')
-      .orderBy('profile.country', 'ASC')
-      .getRawMany();
+      .where('profile.companyName IS NOT NULL');
+
+    if (userType) {
+      query = query.andWhere('user.userType = :userType', { userType });
+    }
+
+    query = query
+      .groupBy('profile.companyName')
+      .orderBy('count', 'DESC')
+      .limit(10);
+
+    return query.getRawMany();
+  }
+
+  async getDepartementDistribution(
+    userType?: string,
+  ): Promise<{ department: string; count: number }[]> {
+    let query = this.profileRepository
+      .createQueryBuilder('profile')
+      .innerJoinAndSelect('profile.user', 'user')
+      .select('profile.department', 'department')
+      .addSelect('COUNT(*)', 'count')
+      .where('profile.department IS NOT NULL');
+
+    if (userType) {
+      query = query.andWhere('user.userType = :userType', { userType });
+    }
+
+    query = query
+      .groupBy('profile.department')
+      .orderBy('count', 'DESC')
+      .limit(10);
+
+    return query.getRawMany();
   }
 }

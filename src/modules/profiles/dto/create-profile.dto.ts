@@ -1,10 +1,4 @@
-import {
-  IsString,
-  IsNotEmpty,
-  IsOptional,
-  IsNumber,
-  IsDate,
-} from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateProfileDto {
   @IsString()
@@ -62,36 +56,4 @@ export class CreateProfileDto {
   @IsString()
   @IsOptional()
   lookingFor?: string;
-
-  @IsString()
-  @IsOptional()
-  positionLevel?: string;
-
-  @IsNumber()
-  @IsOptional()
-  salary?: number;
-
-  @IsString()
-  @IsOptional()
-  division?: string;
-
-  @IsDate()
-  @IsOptional()
-  dob?: Date;
-
-  @IsString()
-  @IsOptional()
-  address?: string;
-
-  @IsString()
-  @IsOptional()
-  job?: string;
-
-  @IsNumber()
-  @IsOptional()
-  yearsOfExperience?: number;
-
-  @IsNumber()
-  @IsOptional()
-  yearsAtCurrentCompany?: number;
 }
