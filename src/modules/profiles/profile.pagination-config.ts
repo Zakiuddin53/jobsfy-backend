@@ -47,6 +47,11 @@ export const PROFILE_PAGINATION_CONFIG: PaginateConfig<Profile> = {
     industry: [FilterOperator.EQ, FilterOperator.IN, FilterOperator.ILIKE],
     job: [FilterOperator.EQ, FilterOperator.IN, FilterOperator.ILIKE],
     state: [FilterOperator.EQ, FilterOperator.IN, FilterOperator.ILIKE],
+    'user.userType': [
+      FilterOperator.EQ,
+      FilterOperator.IN,
+      FilterOperator.ILIKE,
+    ],
   },
   relations: {
     user: true,
