@@ -4,7 +4,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
-import { ProfileModule } from './modules/profiles/profiles.module';
 import { UsersModule } from './modules/users/users.module';
 import { JwtGuard } from './modules/auth/guards/jwt.guard';
 import { PassportModule } from '@nestjs/passport';
@@ -15,7 +14,6 @@ import { BadRequestErrorFilter } from './exceptions-filters/bad-request-error.fi
 
 @Module({
   imports: [
-    ProfileModule,
     UsersModule,
     AuthModule,
 

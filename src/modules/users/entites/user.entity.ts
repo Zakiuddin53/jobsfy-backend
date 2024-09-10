@@ -7,6 +7,9 @@ import {
   BeforeInsert,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { Unemployed } from './unemployed.entity';
+import { Corporate } from './corporate.entity';
+import { MuslimCompany } from './muslim-company.entity';
 
 @Entity()
 export class User {
@@ -27,6 +30,15 @@ export class User {
     enum: ['corporate', 'muslim-company', 'unemployed', 'admin'],
   })
   userType: string;
+
+  @OneToOne(() => Corporate, (corporate) => corporate.user)
+  corporate: Corporate;
+
+  @OneToOne(() => MuslimCompany, (muslimCompany) => muslimCompany.user)
+  muslimCompany: MuslimCompany;
+
+  @OneToOne(() => Unemployed, (unemployed) => unemployed.user)
+  unemployed: Unemployed;
 
   @Column({ nullable: true })
   refreshToken: string;

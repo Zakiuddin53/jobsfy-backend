@@ -5,7 +5,6 @@ import * as bcrypt from 'bcrypt';
 import { UserService } from '../users/users.service';
 import { RegisterRequestDto } from './dtos/register-request.dto';
 import { AuthenticatedUserDto } from './dtos/authenticate-user.dto';
-import { ProfileService } from '../profiles/profiles.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 
 @Injectable()
@@ -14,7 +13,6 @@ export class AuthService {
     private usersService: UserService,
     private jwtService: JwtService,
     private configService: ConfigService,
-    private profileService: ProfileService,
   ) {}
 
   async validateUser(
@@ -43,7 +41,12 @@ export class AuthService {
   }
 
   async login(user: any) {
-    const tokens = await this.getTokens(user.id, user.email, user.role);
+    const tokens = await this.getTokens(
+      user.id,
+      user.email,
+      user.role,
+      user.userType,
+    );
     await this.usersService.setRefreshToken(user.id, tokens.refresh_token);
     return tokens;
   }
@@ -62,18 +65,29 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token');
     }
 
-    const tokens = await this.getTokens(user.id, user.email, user.role);
+    const tokens = await this.getTokens(
+      user.id,
+      user.email,
+      user.role,
+      user.userType,
+    );
     await this.usersService.setRefreshToken(user.id, tokens.refresh_token);
     return tokens;
   }
 
-  private async getTokens(userId: number, email: string, role: string) {
+  private async getTokens(
+    userId: number,
+    email: string,
+    role: string,
+    userType: string,
+  ) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {
           sub: userId,
           email,
           role,
+          userType,
         },
         {
           secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
@@ -85,6 +99,7 @@ export class AuthService {
           sub: userId,
           email,
           role,
+          userType,
         },
         {
           secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
