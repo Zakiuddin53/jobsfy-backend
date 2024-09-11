@@ -17,9 +17,11 @@ import { JwtGuard } from '../auth/guards/jwt.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entites/user.entity';
+import { Public } from '../auth/decorators/public.decorator';
 
 @Controller('user')
 @ApiTags('User')
+@Public()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
